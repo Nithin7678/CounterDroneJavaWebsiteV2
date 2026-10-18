@@ -1,458 +1,74 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SKYSHIELD AI | Counter-Drone Command</title>
-    <style>
-        :root {
-            --bg: #07111f;
-            --panel: #101e30;
-            --border: #243950;
-            --cyan: #43e7f5;
-            --green: #4dffb5;
-            --red: #ff5470;
-            --text: #eaf4ff;
-            --muted: #8da4bb;
-        }
-
-        * { box-sizing: border-box; }
-
-        body {
-            margin: 0;
-            background: var(--bg);
-            color: var(--text);
-            font-family: Arial, sans-serif;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            padding: 22px 5%;
-            border-bottom: 1px solid var(--border);
-            background: #091625;
-        }
-
-        .brand {
-            font-size: 22px;
-            font-weight: 800;
-            letter-spacing: 2px;
-        }
-
-        .brand span { color: var(--cyan); }
-
-        .online {
-            color: var(--green);
-            font-size: 12px;
-            letter-spacing: 1px;
-        }
-
-        main {
-            max-width: 1250px;
-            padding: 30px 20px;
-            margin: auto;
-        }
-
-        .eyebrow {
-            color: var(--cyan);
-            letter-spacing: 3px;
-            font-size: 11px;
-        }
-
-        h1 { margin-bottom: 8px; }
-
-        .subtitle {
-            color: var(--muted);
-            line-height: 1.6;
-        }
-
-        .notice {
-            margin: 22px 0;
-            padding: 13px 16px;
-            border: 1px solid #725f2b;
-            background: #282314;
-            color: #ffdf8b;
-            border-radius: 8px;
-            font-size: 13px;
-            line-height: 1.5;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin: 22px 0;
-        }
-
-        .panel {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-        }
-
-        .stat-label {
-            color: var(--muted);
-            font-size: 12px;
-        }
-
-        .stat-value {
-            font-size: 28px;
-            font-weight: bold;
-            margin-top: 12px;
-        }
-
-        .cyan { color: var(--cyan); }
-        .green { color: var(--green); }
-        .red { color: var(--red); }
-
-        .dashboard {
-            display: grid;
-            grid-template-columns: 1.5fr 1fr;
-            gap: 18px;
-        }
-
-        .panel-heading {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        h2 { font-size: 16px; margin: 0; }
-
-        .tag {
-            color: var(--cyan);
-            border: 1px solid #286575;
-            padding: 5px 8px;
-            border-radius: 5px;
-            font-size: 10px;
-        }
-
-        .radar {
-            position: relative;
-            width: min(100%, 390px);
-            aspect-ratio: 1;
-            border-radius: 50%;
-            margin: 10px auto;
-            overflow: hidden;
-            background:
-                linear-gradient(90deg, transparent 49.7%, #245065 50%, transparent 50.3%),
-                linear-gradient(transparent 49.7%, #245065 50%, transparent 50.3%),
-                repeating-radial-gradient(circle, transparent 0 19%, #285064 19.3% 19.7%, transparent 20% 24%);
-            border: 1px solid #2b6a7b;
-            box-shadow: 0 0 25px #12d9e51a, inset 0 0 30px #12d9e511;
-        }
-
-        .sweep {
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            background: conic-gradient(from 0deg, transparent 0 72%, #35f5d82b 95%, #35f5d866 100%);
-            animation: rotate 5s linear infinite;
-        }
-
-        @keyframes rotate { to { transform: rotate(360deg); } }
-
-        .target {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: var(--red);
-            border-radius: 50%;
-            box-shadow: 0 0 13px var(--red);
-            animation: pulse 1.8s infinite;
-        }
-
-        .target.one { top: 28%; left: 66%; }
-        .target.two { top: 62%; left: 32%; background: var(--green); box-shadow: 0 0 13px var(--green); }
-        .target.three { top: 73%; left: 72%; background: #ffd166; box-shadow: 0 0 13px #ffd166; }
-
-        @keyframes pulse {
-            50% { opacity: .35; transform: scale(1.5); }
-        }
-
-        .radar-caption {
-            text-align: center;
-            color: var(--muted);
-            font-size: 11px;
-            margin-top: 12px;
-        }
-
-        .threat {
-            padding: 15px 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .threat:last-child { border-bottom: 0; }
-
-        .threat-top {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            margin-bottom: 8px;
-        }
-
-        .level {
-            font-size: 10px;
-            font-weight: bold;
-        }
-
-        .bar {
-            height: 5px;
-            border-radius: 5px;
-            background: #26374a;
-            overflow: hidden;
-        }
-
-        .fill {
-            height: 100%;
-            border-radius: 5px;
-        }
-
-        .medium { width: 58%; background: #ffd166; }
-        .low { width: 25%; background: var(--green); }
-        .high { width: 84%; background: var(--red); }
-
-        .actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 18px;
-        }
-
-        button {
-            padding: 11px 14px;
-            border-radius: 7px;
-            border: 1px solid var(--cyan);
-            color: var(--cyan);
-            background: transparent;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        button:hover { background: #43e7f51a; }
-
-        .primary {
-            color: #07111f;
-            background: var(--cyan);
-        }
-
-        .primary:hover { background: #9af5ff; }
-
-        #events {
-            margin-top: 18px;
-        }
-
-        .event {
-            padding: 12px 0;
-            border-bottom: 1px solid var(--border);
-            font-size: 13px;
-            line-height: 1.5;
-        }
-
-        .event:last-child { border-bottom: 0; }
-
-        .event small {
-            display: block;
-            color: var(--muted);
-            margin-top: 5px;
-        }
-
-        footer {
-            text-align: center;
-            padding: 28px 15px;
-            color: var(--muted);
-            font-size: 11px;
-            line-height: 1.8;
-        }
-
-        @media (max-width: 750px) {
-            header { padding: 18px; }
-            .brand { font-size: 17px; }
-            .stats { grid-template-columns: 1fr; }
-            .dashboard { grid-template-columns: 1fr; }
-            main { padding: 24px 14px; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SKYSHIELD AI | Live Remote ID</title>
+<style>
+:root{--bg:#07111f;--panel:#101e30;--border:#243950;--cyan:#43e7f5;--green:#4dffb5;--red:#ff5470;--text:#eaf4ff;--muted:#8da4bb}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:22px 5%;border-bottom:1px solid var(--border);background:#091625}
+.brand{font-size:22px;font-weight:800;letter-spacing:2px}.brand span{color:var(--cyan)}.status{font-size:12px;color:#ffd166}
+main{max-width:1200px;margin:auto;padding:30px 20px}.eyebrow{font-size:11px;letter-spacing:3px;color:var(--cyan)}h1{margin:10px 0}.subtitle{color:var(--muted);line-height:1.6}
+.notice{margin:22px 0;padding:14px 16px;border:1px solid #725f2b;background:#282314;color:#ffdf8b;border-radius:8px;font-size:13px;line-height:1.6}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px}
+h2{font-size:16px;margin:0 0 14px}.metric{font-size:30px;font-weight:bold;color:var(--cyan)}.muted{color:var(--muted);font-size:12px}
+button{margin-top:14px;padding:10px 14px;border-radius:7px;border:1px solid var(--cyan);color:var(--cyan);background:transparent;cursor:pointer;font-weight:bold}
+button:hover{background:#43e7f51a}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:11px 8px;border-bottom:1px solid var(--border);white-space:nowrap}th{color:var(--muted);font-weight:normal}
+.empty{padding:24px 0;color:var(--muted);line-height:1.6}.connection{display:flex;align-items:center;gap:10px;margin:12px 0}.dot{width:9px;height:9px;border-radius:50%;background:#ffd166}
+footer{text-align:center;padding:28px 15px;color:var(--muted);font-size:11px;line-height:1.8}
+@media(max-width:750px){header{padding:18px}.brand{font-size:17px}.grid{grid-template-columns:1fr}main{padding:22px 14px}}
+</style>
 </head>
 <body>
-<header>
-    <div class="brand">SKYSHIELD <span>AI</span></div>
-    <div class="online">● SYSTEM ONLINE · DEMO</div>
-</header>
-
+<header><div class="brand">SKYSHIELD <span>AI</span></div><div class="status" id="connectionStatus">● WAITING FOR LIVE FEED</div></header>
 <main>
-    <div class="eyebrow">AIRSPACE SECURITY PLATFORM</div>
-    <h1>Command Dashboard</h1>
-    <p class="subtitle">
-        A unified interface for simulated drone monitoring,
-        threat visualization, and incident management.
-    </p>
-
-    <div class="notice">
-        DEMO ENVIRONMENT — All radar targets, threat scores, and events
-        are simulated. This website does not detect real drones or
-        control counter-drone equipment.
-    </div>
-
-    <section class="stats">
-        <div class="panel">
-            <div class="stat-label">SIMULATED TARGETS</div>
-            <div class="stat-value cyan" id="targetCount">03</div>
-        </div>
-        <div class="panel">
-            <div class="stat-label">ELEVATED THREATS</div>
-            <div class="stat-value red" id="threatCount">01</div>
-        </div>
-        <div class="panel">
-            <div class="stat-label">PLATFORM STATUS</div>
-            <div class="stat-value green" style="font-size:21px">OPERATIONAL</div>
-        </div>
-    </section>
-
-    <section class="dashboard">
-        <div class="panel">
-            <div class="panel-heading">
-                <h2>Radar Visualization</h2>
-                <span class="tag">SIMULATION</span>
-            </div>
-
-            <div class="radar">
-                <div class="sweep"></div>
-                <div class="target one"></div>
-                <div class="target two"></div>
-                <div class="target three"></div>
-            </div>
-            <div class="radar-caption">
-                SIMULATED AIRSPACE · NOT CONNECTED TO LIVE SENSORS
-            </div>
-
-            <div class="actions">
-                <button class="primary" onclick="runSimulation()">Run Simulation</button>
-                <button onclick="resetSimulation()">Reset Dashboard</button>
-            </div>
-        </div>
-
-        <div>
-            <div class="panel">
-                <div class="panel-heading">
-                    <h2>Threat Assessment</h2>
-                    <span class="tag">DEMO DATA</span>
-                </div>
-
-                <div class="threat">
-                    <div class="threat-top">
-                        <span>Target ALPHA</span>
-                        <span class="level red">HIGH · 84%</span>
-                    </div>
-                    <div class="bar"><div class="fill high"></div></div>
-                </div>
-
-                <div class="threat">
-                    <div class="threat-top">
-                        <span>Target BRAVO</span>
-                        <span class="level" style="color:#ffd166">MEDIUM · 58%</span>
-                    </div>
-                    <div class="bar"><div class="fill medium"></div></div>
-                </div>
-
-                <div class="threat">
-                    <div class="threat-top">
-                        <span>Target CHARLIE</span>
-                        <span class="level green">LOW · 25%</span>
-                    </div>
-                    <div class="bar"><div class="fill low"></div></div>
-                </div>
-            </div>
-
-            <div class="panel" id="events">
-                <div class="panel-heading">
-                    <h2>Incident Activity</h2>
-                    <span class="tag">LOCAL LOG</span>
-                </div>
-                <div id="eventList">
-                    <div class="event">
-                        Dashboard initialized.
-                        <small>DEMO · Initial system event</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+<div class="eyebrow">AIRSPACE SECURITY PLATFORM</div>
+<h1>Live Remote ID Dashboard</h1>
+<p class="subtitle">Monitor observations received from a compatible Remote ID receiver or gateway.</p>
+<div class="notice"><strong>LIVE DATA ONLY:</strong> This dashboard does not generate fake drone locations. It will remain empty until a compatible receiver or gateway sends real observations. A website hosted on Render cannot receive nearby Bluetooth/Wi-Fi broadcasts without a connected gateway.</div>
+<section class="grid">
+<div class="panel"><h2>Received Track Count</h2><div class="metric" id="trackCount">0</div><p class="muted">Current observations held by this application</p><div class="connection"><span class="dot" id="statusDot"></span><span id="feedStatus">No live Remote ID data received</span></div><button onclick="refreshTracks()">Refresh live feed</button></div>
+<div class="panel"><h2>Receiver Setup</h2><p class="muted">Send each verified receiver observation to the Java API:</p><p><code>POST /api/remote-id/observations</code></p><p class="muted">Required: deviceId, latitude, longitude. Optional: altitude, speed, heading.</p><p class="muted">The API is a receiver endpoint, not a detector. Connect a real Remote ID receiver or gateway before expecting live tracks.</p></div>
+</section>
+<section class="panel" style="margin-top:16px">
+<h2>Live Track Table</h2><div class="table-wrap"><table><thead><tr><th>Device ID</th><th>Latitude</th><th>Longitude</th><th>Altitude</th><th>Speed</th><th>Heading</th><th>Received At</th></tr></thead><tbody id="tracksBody"><tr><td colspan="7" class="empty">No live observations received yet.</td></tr></tbody></table></div>
+</section>
+<section class="panel" style="margin-top:16px"><h2>Recent Feed Status</h2><div id="feedMessage" class="empty">Checking the Java tracking API…</div><p class="muted">Tracks are stored in memory and may be cleared when the application restarts.</p></section>
 </main>
-
-<footer>
-    SKYSHIELD AI · COUNTER-DRONE THREAT MANAGEMENT DEMONSTRATION<br>
-    Educational prototype · No real-world detection or interception
-</footer>
-
+<footer>SKYSHIELD AI · REMOTE ID RECEIVER INTEGRATION<br>Live data is shown only when received from a connected data source. No drone interception controls.</footer>
 <script>
-    let simulationCount = 0;
-
-    function addEvent(message) {
-        const list = document.getElementById("eventList");
-        const item = document.createElement("div");
-        const time = new Date().toLocaleTimeString();
-
-        item.className = "event";
-        item.textContent = message;
-
-        const details = document.createElement("small");
-        details.textContent = "DEMO · " + time;
-        item.appendChild(details);
-
-        list.prepend(item);
-
-        while (list.children.length > 5) {
-            list.removeChild(list.lastChild);
-        }
-    }
-
-    async function checkBackend() {
-        try {
-            const response = await fetch("/api/status");
-            if (response.ok) {
-                const message = await response.text();
-                addEvent(message);
-            }
-        } catch (error) {
-            // The dashboard can still display its simulated data.
-        }
-    }
-
-    function runSimulation() {
-        simulationCount++;
-
-        const targets = 2 + Math.floor(Math.random() * 5);
-        const threats = Math.floor(Math.random() * 3);
-
-        document.getElementById("targetCount").textContent =
-            String(targets).padStart(2, "0");
-
-        document.getElementById("threatCount").textContent =
-            String(threats).padStart(2, "0");
-
-        addEvent("Simulation #" + simulationCount +
-            " completed. " + targets +
-            " simulated targets reviewed.");
-    }
-
-    function resetSimulation() {
-        simulationCount = 0;
-        document.getElementById("targetCount").textContent = "03";
-        document.getElementById("threatCount").textContent = "01";
-
-        document.getElementById("eventList").innerHTML = "";
-
-        addEvent("Dashboard reset to default demo values.");
-    }
-
-    checkBackend();
+async function refreshTracks(){
+ const status=document.getElementById("connectionStatus");
+ const feed=document.getElementById("feedStatus");
+ const message=document.getElementById("feedMessage");
+ const dot=document.getElementById("statusDot");
+ try{
+  const response=await fetch("/api/remote-id/tracks",{cache:"no-store"});
+  if(!response.ok) throw new Error("Tracking API returned HTTP "+response.status);
+  const tracks=await response.json();
+  document.getElementById("trackCount").textContent=String(tracks.length);
+  const body=document.getElementById("tracksBody");
+  body.replaceChildren();
+  if(tracks.length===0){
+   const row=body.insertRow();const cell=row.insertCell();cell.colSpan=7;cell.className="empty";cell.textContent="No live observations received yet.";
+   status.textContent="● NO LIVE FEED";feed.textContent="No live Remote ID data received";dot.style.background="#ffd166";
+   message.textContent="Tracking API is reachable, but no receiver observations have arrived.";
+  }else{
+   tracks.forEach(t=>{
+    const row=body.insertRow();
+    [t.deviceId,t.latitude,t.longitude,t.altitude??"—",t.speed??"—",t.heading??"—",t.receivedAt??"—"].forEach(value=>{row.insertCell().textContent=String(value)});
+   });
+   status.textContent="● LIVE DATA RECEIVED";feed.textContent="Remote ID observations received";dot.style.background="#4dffb5";
+   message.textContent="Received "+tracks.length+" track(s) from the connected data source.";
+  }
+ }catch(error){
+  status.textContent="● API UNAVAILABLE";feed.textContent="Tracking API unavailable";dot.style.background="#ff5470";
+  message.textContent="Could not reach the tracking API. Confirm the Spring Boot service is running.";
+ }
+}
+refreshTracks();
+setInterval(refreshTracks,3000);
 </script>
 </body>
 </html>
