@@ -70,7 +70,7 @@ public class RemoteIdController {
                                   boolean authenticated) {}
 
     @PostMapping("/remote-id/observations")
-    @org.springframework.http.HttpStatus.CREATED
+    @org.springframework.web.bind.annotation.ResponseStatus(org.springframework.http.HttpStatus.CREATED)
     public Observation receive(@RequestBody Observation data) {
         if (data == null || data.deviceId == null || data.deviceId.isBlank()
                 || !Double.isFinite(data.latitude) || !Double.isFinite(data.longitude)
