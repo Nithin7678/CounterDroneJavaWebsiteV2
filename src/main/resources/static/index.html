@@ -27,6 +27,7 @@ button{background:#fff;border:1px solid #d5dee8;border-radius:7px;padding:9px 13
 </div>
 <div class="note" id="about"><strong>Important:</strong> This dashboard uses OpenSky aircraft state data, not a dedicated drone Remote ID feed. Squawk codes 7500, 7600 and 7700 are aviation emergency-related codes, but OpenSky may not return them in every response and they do not identify drones. Empty results may mean no positions/alert codes were returned or the provider is unavailable.</div>
 </main><footer>SKYSHIELD AI · OPEN SKY LIVE DATA VIEW</footer>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 let liveMap=null,aircraftLayer=null;
 function initMap(){if(!window.L)return;liveMap=L.map("liveMap").setView([13.0,77.6],8);L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18,attribution:"© OpenStreetMap contributors"}).addTo(liveMap);aircraftLayer=L.layerGroup().addTo(liveMap)}
